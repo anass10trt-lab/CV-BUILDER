@@ -1,0 +1,254 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio AI - Ultimate CV Builder Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Playfair+Display:wght@700&family=Montserrat:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg-dark: #020617;
+            --panel-bg: #0f172a;
+            --border: rgba(255, 255, 255, 0.08);
+            --text-muted: #94a3b8;
+            --accent-color: #6366f1;
+        }
+
+        * { box-sizing: border-box; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-dark); color: white; overflow: hidden; }
+
+        /* --- ACCUEIL --- */
+        #landing {
+            position: fixed; inset: 0; z-index: 9999; background: radial-gradient(circle at top right, #1e1b4b, #020617);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.8s cubic-bezier(0.85, 0, 0.15, 1);
+        }
+        .hero-title { font-size: 6rem; font-weight: 800; letter-spacing: -4px; margin: 0; background: linear-gradient(to right, #fff, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .start-btn { margin-top: 30px; padding: 20px 60px; font-size: 1.2rem; font-weight: 700; border: none; border-radius: 50px; background: white; color: black; cursor: pointer; transition: 0.3s; }
+
+        /* --- APP --- */
+        #app { display: none; height: 100vh; flex-direction: column; }
+        .top-nav { height: 70px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 30px; background: var(--panel-bg); }
+        .main-content { display: flex; flex: 1; overflow: hidden; }
+
+        /* --- CONFIG --- */
+        .config-panel { width: 450px; background: var(--panel-bg); border-right: 1px solid var(--border); overflow-y: auto; padding: 30px; }
+        .section-box { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        h3 { font-size: 0.8rem; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; margin-top: 0; }
+        
+        .theme-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .theme-card { cursor: pointer; border: 2px solid transparent; border-radius: 8px; overflow: hidden; opacity: 0.6; transition: 0.3s; }
+        .theme-card.active { border-color: var(--primary); opacity: 1; transform: scale(1.05); }
+        .theme-card img { width: 100%; height: 70px; object-fit: cover; }
+
+        input, textarea { width: 100%; background: #020617; border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: white; margin-top: 10px; font-family: inherit; }
+        .file-input { background: #1e293b; padding: 10px; cursor: pointer; font-size: 12px; }
+
+        /* --- PREVIEW --- */
+        .preview-area { flex: 1; background: #000; display: flex; justify-content: center; padding: 60px 20px; overflow-y: auto; }
+        .cv-page { width: 210mm; min-height: 297mm; background: white; color: #333; box-shadow: 0 30px 100px rgba(0,0,0,0.8); transition: 0.4s; }
+
+        /* --- PHOTO STYLE --- */
+        .profile-img { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 4px solid white; background: #eee; margin-bottom: 20px; }
+
+        /* THÈMES */
+        .theme-modern { display: flex; }
+        .theme-modern .sidebar { width: 35%; background: #2c3e50; color: white; padding: 40px 25px; }
+        .theme-modern .main { width: 65%; padding: 50px; }
+
+        .theme-pink { display: flex; }
+        .theme-pink .sidebar { width: 35%; background: #fff5f7; color: #db2777; padding: 40px 25px; border-right: 5px solid #fbcfe8; }
+        .theme-pink .main { width: 65%; padding: 50px; }
+
+        .theme-elegant { display: flex; flex-direction: column; }
+        .theme-elegant .header-top { padding: 40px; text-align: center; border-bottom: 3px solid var(--accent-color); background: #f8fafc; }
+        .theme-elegant .content { display: flex; padding: 40px; }
+
+        /* --- BOT --- */
+        #bot-container { position: fixed; bottom: 30px; right: 30px; z-index: 10000; }
+        .bot-bubble { width: 65px; height: 65px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .chat-win { position: absolute; bottom: 85px; right: 0; width: 380px; height: 500px; background: #0f172a; border-radius: 20px; border: 1px solid var(--border); display: none; flex-direction: column; overflow: hidden; }
+        .chat-msg { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
+        .m-bot { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; align-self: flex-start; }
+        .m-user { background: var(--primary); padding: 10px; border-radius: 10px; align-self: flex-end; }
+
+        @media print { .config-panel, .top-nav, #bot-container, #landing { display: none !important; } .preview-area { padding: 0; background: white; } .cv-page { box-shadow: none; } }
+    </style>
+</head>
+<body>
+
+    <section id="landing">
+        <h1 class="hero-title">Studio AI</h1>
+        <p style="font-size: 1.5rem; color: var(--text-muted);">Le futur du CV est ici.</p>
+        <button class="start-btn" onclick="startEditor()">CRÉER MON CV</button>
+    </section>
+
+    <main id="app">
+        <nav class="top-nav">
+            <span style="font-weight: 800; font-size: 1.2rem;">STUDIO AI <span style="color: var(--primary)">PRO</span></span>
+            <button onclick="window.print()" style="background: white; color: black; border: none; padding: 10px 25px; border-radius: 8px; font-weight: 800; cursor: pointer;">PDF</button>
+        </nav>
+
+        <div class="main-content">
+            <aside class="config-panel">
+                <div class="section-box">
+                    <h3>Modèle & Photo</h3>
+                    <div class="theme-selector">
+                        <div class="theme-card active" onclick="setTheme('modern', this)"><img src="https://cvcrea.fr/wp-content/uploads/2024/08/exemple-cv-francais-2.jpg"></div>
+                        <div class="theme-card" onclick="setTheme('pink', this)"><img src="https://modele-cv.com/app/uploads/doc-builder/cv/miniatures/cv-6-pink-1200.webp"></div>
+                        <div class="theme-card" onclick="setTheme('elegant', this)"><img src="https://img.freepik.com/premium-vector/professional-cv-resume-template-design_490643-379.jpg"></div>
+                    </div>
+                    <label>Photo de profil</label>
+                    <input type="file" class="file-input" accept="image/*" onchange="handleImage(this)">
+                    <label style="margin-top:10px; display:block">Couleur thème</label>
+                    <input type="color" value="#6366f1" oninput="updateAccent(this.value)">
+                </div>
+
+                <div class="section-box">
+                    <h3>Identité</h3>
+                    <input type="text" id="inName" placeholder="Prénom Nom" oninput="liveUpdate()">
+                    <input type="text" id="inJob" placeholder="Titre du poste" oninput="liveUpdate()">
+                    <input type="text" id="inEmail" placeholder="Email" oninput="liveUpdate()">
+                    <input type="text" id="inPhone" placeholder="Téléphone" oninput="liveUpdate()">
+                </div>
+
+                <div class="section-box">
+                    <h3>Profil</h3>
+                    <textarea id="inBio" rows="4" placeholder="Description..." oninput="liveUpdate()"></textarea>
+                </div>
+            </aside>
+
+            <section class="preview-area">
+                <div id="cv-render" class="cv-page theme-modern"></div>
+            </section>
+        </div>
+
+        <div id="bot-container">
+            <div class="chat-win" id="chatWin">
+                <div style="padding:15px; background:var(--primary); font-weight:bold">ROBOT OMNISCIENT</div>
+                <div class="chat-msg" id="chatMsgs">
+                    <div class="m-bot">Je suis l'IA. Posez-moi n'importe quelle question sur n'importe quel sujet !</div>
+                </div>
+                <div style="padding:15px; display:flex; gap:5px">
+                    <input type="text" id="chatIn" placeholder="Question..." onkeypress="if(event.key==='Enter') sendMsg()">
+                    <button onclick="sendMsg()" style="background:var(--primary); border:none; color:white; padding:10px; border-radius:5px">OK</button>
+                </div>
+            </div>
+            <div class="bot-bubble" onclick="toggleChat()">
+                <i class="fas fa-magic" style="color:var(--primary); font-size:24px"></i>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentTheme = 'modern';
+        let profilePic = "";
+
+        function startEditor() {
+            document.getElementById('landing').style.display = 'none';
+            document.getElementById('app').style.display = 'flex';
+            liveUpdate();
+        }
+
+        function handleImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profilePic = e.target.result;
+                    liveUpdate();
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function setTheme(theme, el) {
+            currentTheme = theme;
+            document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            liveUpdate();
+        }
+
+        function updateAccent(color) {
+            document.documentElement.style.setProperty('--accent-color', color);
+            liveUpdate();
+        }
+
+        function toggleChat() {
+            const win = document.getElementById('chatWin');
+            win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function liveUpdate() {
+            const name = document.getElementById('inName').value || "VOTRE NOM";
+            const job = document.getElementById('inJob').value || "MÉTIER";
+            const bio = document.getElementById('inBio').value || "Votre description...";
+            const email = document.getElementById('inEmail').value || "email@exemple.com";
+            const phone = document.getElementById('inPhone').value || "06 00 00 00 00";
+            const imgHtml = profilePic ? `<img src="${profilePic}" class="profile-img">` : `<div class="profile-img" style="display:flex; align-items:center; justify-content:center; background:#ddd; color:#999"><i class="fas fa-user fa-3x"></i></div>`;
+
+            const render = document.getElementById('cv-render');
+            render.className = `cv-page theme-${currentTheme}`;
+
+            if (currentTheme === 'modern') {
+                render.innerHTML = `
+                    <div class="sidebar">
+                        ${imgHtml}
+                        <h3 style="color:white">CONTACT</h3>
+                        <p style="font-size:12px">${phone}<br>${email}</p>
+                    </div>
+                    <div class="main">
+                        <h1 style="font-size:40px; margin:0">${name}</h1>
+                        <h2 style="color:var(--accent-color); font-weight:400">${job}</h2>
+                        <h3 style="border-bottom:2px solid var(--accent-color)">PROFIL</h3>
+                        <p style="line-height:1.6">${bio}</p>
+                    </div>`;
+            } else if (currentTheme === 'pink') {
+                render.innerHTML = `
+                    <div class="sidebar">
+                        ${imgHtml}
+                        <h3>CONTACT</h3>
+                        <p>${phone}<br>${email}</p>
+                    </div>
+                    <div class="main">
+                        <h1 style="color:#db2777; font-size:50px">${name}</h1>
+                        <p style="font-weight:bold">${job}</p>
+                        <h3 style="color:#db2777">DESCRIPTION</h3>
+                        <p>${bio}</p>
+                    </div>`;
+            } else {
+                render.innerHTML = `
+                    <div class="header-top">
+                        ${imgHtml}
+                        <h1 style="margin:0">${name}</h1>
+                        <p style="color:var(--accent-color); font-weight:bold">${job}</p>
+                    </div>
+                    <div class="content">
+                        <div style="width:30%; border-right:1px solid #eee; padding-right:20px">
+                            <h3>CONTACT</h3>
+                            <p style="font-size:12px">${phone}<br>${email}</p>
+                        </div>
+                        <div style="width:70%; padding-left:20px">
+                            <h3>PROFIL</h3>
+                            <p>${bio}</p>
+                        </div>
+                    </div>`;
+            }
+        }
+
+        function sendMsg() {
+            const input = document.getElementById('chatIn');
+            const msgs = document.getElementById('chatMsgs');
+            if(!input.value) return;
+            msgs.innerHTML += `<div class="m-user">${input.value}</div>`;
+            const val = input.value;
+            input.value = "";
+            setTimeout(() => {
+                msgs.innerHTML += `<div class="m-bot">Je connais tout sur "${val}". Comment puis-je vous aider avec cette information pour votre CV ?</div>`;
+                msgs.scrollTop = msgs.scrollHeight;
+            }, 800);
+        }
+    </script>
+</body>
+</html>
